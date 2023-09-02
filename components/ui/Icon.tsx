@@ -1,6 +1,6 @@
+import { ReactNode } from "react";
 import dynamic from "next/dynamic";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
-import { ReactNode } from "react";
 interface iconProps {
   name: keyof typeof dynamicIconImports;
   color: string;
@@ -21,8 +21,11 @@ const Icon = ({
 
   return (
     <LucideIcon
-      className="p-1 rounded-md cursor-pointer hover:bg-slate-300 dark:bg-slate-700"
-      size="30"
+      className={
+        className +
+        "p-2  rounded-md cursor-pointer hover:bg-slate-300 dark:bg-slate-700"
+      }
+      size={size}
       onClick={onClick}
       {...props}
     />

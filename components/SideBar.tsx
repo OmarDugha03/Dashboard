@@ -4,16 +4,15 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { motion as m, AnimatePresence } from "framer-motion";
 import classnames from "classnames";
-import { Icon, Switcher, Loader, Text } from "@components/index";
-
+import { Icon, Switcher, Text } from "@components/index";
 interface SideBarProps {
   children: ReactNode;
 }
 
 const SideBar: FC<SideBarProps> = ({ children }) => {
   const [open, setOpen] = useState<boolean>(false);
-  const { setTheme, theme } = useTheme();
-  const [isToggle, setToggle] = useState(theme === "dark");
+  const { setTheme, resolvedTheme } = useTheme();
+  const [isToggle, setToggle] = useState(false);
   const listItems = [
     {
       id: 0,
@@ -55,21 +54,21 @@ const SideBar: FC<SideBarProps> = ({ children }) => {
   };
   const [selected, setSelected] = useState(listItems);
   function handleChange() {
-    setTheme(theme === "dark" ? "light" : "dark");
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
     setToggle(!isToggle);
   }
 
   useEffect(() => {
     const data = window.localStorage.getItem("theme");
-    data === "dark" && setToggle(true);
+    data === "dark" && setToggle(!isToggle);
   }, []);
 
   return (
-    <div className="flex ">
+    <div className="flex " suppressHydrationWarning>
       {/*       // ! The Main SideBar */}
       <m.div
         animate={{
-          width: open ? "320px" : "90px",
+          width: open ? "320px" : "85px",
           transition: {
             duration: 1,
             type: "spring",
@@ -77,36 +76,28 @@ const SideBar: FC<SideBarProps> = ({ children }) => {
           },
         }}
         className={classnames(
-          "fixed w-20 h-screen p-4 items-center bg-slate-100 dark:bg-slate-900  border-slate-300 dark:border-slate-200 border-r-[1px] flex flex-col justify-between "
+          "fixed w-20 h-screen p-4  bg-slate-200 dark:bg-slate-900  border-slate-400 dark:border-slate-700 border-r-[1px] flex flex-col  justify-between ",
+          open ? "items-center" : " "
         )}>
         {/*  // ? This is the close and open menu */}
-        <m.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1, translateX: open ? 100 : 0 }}>
+        <m.div className="p-2 my-2" animate={{ translateX: open ? 100 : 0 }}>
           <AnimatePresence>
             {!open ? (
               <Icon
                 onClick={() => setOpen(!open)}
-                /*                 className={classnames(
-                  " ",
-                  open ? " bg-slate-300 transition-all duration-500 " : ""
-                )} */
                 name="align-justify"
                 color={isToggle ? "#fff" : "#ddd"}
-                size={24}></Icon>
+                size={34}></Icon>
             ) : (
               <Icon
-                onClick={() => setOpen(!open)}
-                className={classnames(
-                  "w-10 p-2 rounded-md cursor-pointer hover:bg-slate-300",
-                  open
-                    ? "mr-0 bg-slate-300 transition-all duration-500 ease-linear  delay-200"
-                    : ""
-                )}
                 //@ts-ignore
                 name="x"
+                onClick={() => setOpen(!open)}
                 color={!isToggle ? "#fff" : "#ddd"}
-                size={24}></Icon>
+                size={35}
+                className={
+                  open ? "bg-slate-300 dark:bg-slate-700 " : " "
+                }></Icon>
             )}
           </AnimatePresence>
         </m.div>
@@ -116,21 +107,20 @@ const SideBar: FC<SideBarProps> = ({ children }) => {
             onClick={() => handleClick(item.id)}
             key={item.id}
             href={item.href}
-            className="border-b-[1px] p-1 m-[-10px] dark:border-slate-500  border-slate-300 flex justify-between items-center"
+            className="border-b-[0.5px] dark:border-slate-500  border-slate-300 flex justify-between items-center w-[85%]"
             title={item.label}>
-            <Suspense fallback={<Loader />}>
-              <Icon
-                className={classnames(
-                  "w-10 p-2 my-3 rounded-md shadow-md hover:bg-slate-300 border-b-[1px] border-r-[1px] border-l-[1px] dark:border-slate-500  border-slate-300",
-                  item.isSelected ? "bg-slate-300 " : " ",
-                  open ? " mr-[160px]  " : " "
-                )}
-                //@ts-ignore
-                name={item.classImg}
-                color={!isToggle ? "#fff" : "#bbb"}
-                size={24}
-                alt="icons"></Icon>
-            </Suspense>
+            <Icon
+              className={classnames(
+                "w-10 p-2 my-3 rounded-md shadow-md hover:bg-slate-300 border-b-[1px] border-r-[1px] border-l-[1px] dark:border-slate-500  border-slate-300",
+                item.isSelected ? "bg-slate-300 " : " "
+                /*                open ? " mr-[160px]  " : " " */
+              )}
+              //@ts-ignore
+              name={item.classImg}
+              color={!isToggle ? "#fff" : "#bbb"}
+              size={40}
+              alt="icons"></Icon>
+
             <div className={classnames(open ? "w-10" : " ")}>
               {open && (
                 <m.div
@@ -144,59 +134,35 @@ const SideBar: FC<SideBarProps> = ({ children }) => {
             </div>
           </Link>
         ))}
-        {/* //? here is the Theming */}
 
+        {/* //? here is the Theming */}
         {isToggle ? (
           <div className="flex items-center ">
             <Icon
               name="moon"
               color={isToggle ? "#fff" : "#ddd"}
               className={classnames(
-                "w-10 p-2  rounded-md cursor-pointer hover:bg-slate-300",
+                "w-10 p-2   ",
                 open ? "mr-44" : "",
                 isToggle ? " transition-all  duration-300 rotate-180" : ""
               )}
-              size={0}
+              size={34}
               onClick={handleChange}></Icon>
-            {open && (
-              <m.div
-                initial={{ opacity: 0 }}
-                animate={{
-                  transition: { duration: 1 },
-                  translateX: -30,
-                  opacity: 1,
-                }}
-                transition={{ duration: 1, type: "spring", damping: 15 }}
-                className="z-20 w-full m-1">
-                <Switcher checked={isToggle} onChange={handleChange} />
-              </m.div>
-            )}
+            {open && <Switcher checked={!isToggle} onChange={handleChange} />}
           </div>
         ) : (
-          <div className="flex items-center cursor-pointer">
+          <div className="flex items-center justify-between w-[85%]">
             <Icon
+              className={classnames(
+                "w-10 p-2   ",
+                open ? "mr-0" : "",
+                isToggle ? " transition-all  duration-300 rotate-180" : ""
+              )}
               name="sun"
               color={isToggle ? "#fff" : "#ddd"}
-              className={classnames(
-                "w-10 p-2  rounded-md cursor-pointer hover:bg-slate-300",
-                open ? "" : "",
-                isToggle ? " " : "transition-all  duration-300 rotate-0 "
-              )}
-              size={24}
+              size={37}
               onClick={handleChange}></Icon>
-            {open && (
-              <m.div
-                initial={{ opacity: 0 }}
-                animate={{
-                  transition: { duration: 1 },
-                  translateX: -30,
-                  opacity: 1,
-                }}
-                transition={{ duration: 1, type: "spring", damping: 15 }}
-                className="z-20 w-full m-1">
-                <Switcher checked={isToggle} onChange={handleChange} />
-              </m.div>
-            )}
+            {open && <Switcher checked={!isToggle} onChange={handleChange} />}
           </div>
         )}
       </m.div>
