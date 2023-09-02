@@ -4,11 +4,7 @@ import { ReactNode } from "react";
 
 const Providers = ({ children }: { children: ReactNode }) => {
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      storageKey="theme"
-      enableSystem>
+    <ThemeProvider attribute="class" storageKey="theme" defaultTheme="dark">
       {children}
     </ThemeProvider>
   );

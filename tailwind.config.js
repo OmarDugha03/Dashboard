@@ -10,6 +10,11 @@ module.exports = {
   darkMode: 'class',
   
   theme: {
+        screens: {
+      'xs': '320px',
+      'sm': '425px',
+  
+    },
     extend: {},
   },
   plugins: [],
