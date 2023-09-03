@@ -1,43 +1,64 @@
 "use client";
-import { FC, ReactNode, Suspense, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { motion as m, AnimatePresence } from "framer-motion";
 import classnames from "classnames";
-import { Icon, Switcher, Text } from "@components/index";
-interface SideBarProps {
-  children: ReactNode;
-}
-
-const SideBar: FC<SideBarProps> = ({ children }) => {
+import { Switcher, Text } from "@components/index";
+import {
+  barChart,
+  barChartW,
+  calendarDays,
+  calendarDaysW,
+  calendarRang,
+  calendarRangW,
+  menu,
+  menuW,
+  moon,
+  moonW,
+  pieChart,
+  sun,
+  pieChartW,
+  sunW,
+  wareHouse,
+  wareHouseW,
+  x,
+  xW,
+} from "@Images/index";
+import Image from "next/image";
+const SideBar = ({ children }: { children: ReactNode }) => {
   const [open, setOpen] = useState<boolean>(false);
   const { setTheme, resolvedTheme } = useTheme();
-  const [isToggle, setToggle] = useState(false);
+  const [isToggle, setToggle] = useState(true);
   const listItems = [
     {
       id: 0,
-      classImg: "warehouse",
+      classImgW: wareHouseW,
+      classImg: wareHouse,
       label: "Home",
       href: "/",
       isSelected: true,
     },
     {
       id: 1,
-      classImg: "calendar-range",
+      classImgW: calendarRangW,
+      classImg: calendarRang,
       label: "Customers",
       href: "/customers",
       isSelected: false,
     },
     {
       id: 2,
-      classImg: "bar-chart-4",
+      classImgW: barChartW,
+      classImg: barChart,
       label: "Analytics",
       href: "/analytics",
       isSelected: false,
     },
     {
       id: 3,
-      classImg: "calendar-days",
+      classImgW: calendarDaysW,
+      classImg: calendarDays,
       label: "Tasks",
       href: "/tasks",
       isSelected: false,
@@ -55,17 +76,15 @@ const SideBar: FC<SideBarProps> = ({ children }) => {
   const [selected, setSelected] = useState(listItems);
   function handleChange() {
     setTheme(resolvedTheme === "dark" ? "light" : "dark");
-    setToggle(!isToggle);
+    setToggle((prev) => !prev);
   }
-
   useEffect(() => {
     const data = window.localStorage.getItem("theme");
-    data === "dark" && setToggle(!isToggle);
+    data === "dark" ? setToggle(true) : setToggle(false);
   }, []);
 
   return (
     <div className="flex " suppressHydrationWarning>
-      {/*       // ! The Main SideBar */}
       <m.div
         animate={{
           width: open ? "320px" : "85px",
@@ -79,48 +98,45 @@ const SideBar: FC<SideBarProps> = ({ children }) => {
           "fixed w-20 h-screen p-4  bg-slate-200 dark:bg-slate-900  border-slate-400 dark:border-slate-700 border-r-[1px] flex flex-col  justify-between ",
           open ? "items-center" : " "
         )}>
-        {/*  // ? This is the close and open menu */}
         <m.div className="p-2 my-2" animate={{ translateX: open ? 100 : 0 }}>
           <AnimatePresence>
             {!open ? (
-              <Icon
+              <Image
+                className={classnames(
+                  "w-10 p-2 my-3 rounded-md shadow-md hover:bg-slate-300 border-b-[1px] border-r-[1px] border-l-[1px] dark:border-slate-500  border-slate-300"
+
+                  /*                open ? " mr-[160px]  " : " " */
+                )}
                 onClick={() => setOpen(!open)}
-                name="align-justify"
-                color={isToggle ? "#fff" : "#ddd"}
-                size={34}></Icon>
+                src={isToggle ? menuW : menu}
+                alt={"menu"}></Image>
             ) : (
-              <Icon
-                //@ts-ignore
-                name="x"
+              <Image
+                className={classnames(
+                  "w-10 p-1 my-3 rounded-md shadow-md hover:bg-slate-300 border-b-[1px] border-r-[1px] border-l-[1px] dark:border-slate-500  border-slate-300"
+                )}
                 onClick={() => setOpen(!open)}
-                color={!isToggle ? "#fff" : "#ddd"}
-                size={35}
-                className={
-                  open ? "bg-slate-300 dark:bg-slate-700 " : " "
-                }></Icon>
+                src={isToggle ? xW : x}
+                alt={"menu"}></Image>
             )}
           </AnimatePresence>
         </m.div>
-        {/*    // ? This the LI */}
         {selected.map((item) => (
           <Link
+            suppressHydrationWarning
             onClick={() => handleClick(item.id)}
             key={item.id}
             href={item.href}
             className="border-b-[0.5px] dark:border-slate-500  border-slate-300 flex justify-between items-center w-[85%]"
             title={item.label}>
-            <Icon
-              className={classnames(
-                "w-10 p-2 my-3 rounded-md shadow-md hover:bg-slate-300 border-b-[1px] border-r-[1px] border-l-[1px] dark:border-slate-500  border-slate-300",
-                item.isSelected ? "bg-slate-300 " : " "
-                /*                open ? " mr-[160px]  " : " " */
+            <>
+              {resolvedTheme === "light" && (
+                <Image src={item.classImg} alt={"icons"} />
               )}
-              //@ts-ignore
-              name={item.classImg}
-              color={!isToggle ? "#fff" : "#bbb"}
-              size={40}
-              alt="icons"></Icon>
-
+              {resolvedTheme === "dark" && (
+                <Image src={item.classImgW} alt={"icons"} />
+              )}
+            </>
             <div className={classnames(open ? "w-10" : " ")}>
               {open && (
                 <m.div
@@ -134,34 +150,28 @@ const SideBar: FC<SideBarProps> = ({ children }) => {
             </div>
           </Link>
         ))}
-
-        {/* //? here is the Theming */}
-        {isToggle ? (
+        {resolvedTheme === "light" ? (
           <div className="flex items-center ">
-            <Icon
-              name="moon"
-              color={isToggle ? "#fff" : "#ddd"}
+            <Image
+              src={isToggle ? sunW : sun}
+              onClick={handleChange}
+              alt={"sun"}
               className={classnames(
-                "w-10 p-2   ",
-                open ? "mr-44" : "",
-                isToggle ? " transition-all  duration-300 rotate-180" : ""
+                isToggle ? "transition-all  rotate-180 duration-200" : " "
               )}
-              size={34}
-              onClick={handleChange}></Icon>
+            />
             {open && <Switcher checked={!isToggle} onChange={handleChange} />}
           </div>
         ) : (
           <div className="flex items-center justify-between w-[85%]">
-            <Icon
+            <Image
+              onClick={handleChange}
+              src={isToggle ? moonW : moon}
+              alt={"moon"}
               className={classnames(
-                "w-10 p-2   ",
-                open ? "mr-0" : "",
-                isToggle ? " transition-all  duration-300 rotate-180" : ""
+                isToggle ? "transition-all rotate-0 duration-200" : " "
               )}
-              name="sun"
-              color={isToggle ? "#fff" : "#ddd"}
-              size={37}
-              onClick={handleChange}></Icon>
+            />
             {open && <Switcher checked={!isToggle} onChange={handleChange} />}
           </div>
         )}

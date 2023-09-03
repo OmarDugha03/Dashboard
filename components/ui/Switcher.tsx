@@ -3,7 +3,7 @@ import { Switch } from "@headlessui/react";
 import { FC, ReactNode } from "react";
 
 interface SwitcherProps {
-  checked: any;
+  checked: boolean;
   onChange: any;
   className?: ReactNode;
 }

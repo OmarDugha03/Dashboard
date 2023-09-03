@@ -1,4 +1,4 @@
-export {default as SideBar} from "./SideBar"
+/* export {default as SideBar} from "./SideBar" */
 export {default as Header} from "./Header"
 export {default as Icon} from "./ui/Icon"
 export {default as Text} from "./ui/Text"
